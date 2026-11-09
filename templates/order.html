@@ -16,8 +16,8 @@
           {% for c in carriers %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
         </select>
       </div>
-      <div style="grid-column:1/-1"><label>面单 PDF（可多选）Label PDF(s) *</label>
-        <input type="file" name="labels" accept=".pdf,application/pdf" multiple required />
+      <div style="grid-column:1/-1"><label>面单 PDF / 照片（可多选）Label PDF or photo *</label>
+        <input type="file" name="labels" accept=".pdf,application/pdf,image/*,.png,.jpg,.jpeg,.webp,.heic" capture="environment" multiple required />
       </div>
       <div style="grid-column:1/-1"><label>备注 Note</label><textarea name="note" maxlength="1000" placeholder="可选"></textarea></div>
     </div>
