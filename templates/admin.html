@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}仓库管理{% endblock %}
+{% block content %}
+<section class="card">
+  <div class="row" style="justify-content:space-between">
+    <h1>仓库管理 Admin</h1>
+    <form method="post" action="/admin/logout"><button class="btn secondary" type="submit">退出</button></form>
+  </div>
+  {% if not admin_ready %}<p class="error">ADMIN_PASSWORD 未配置 — 请在服务器写入 .env</p>{% endif %}
+  <p class="row"><a href="#inbounds">入库</a> · <a href="#inventory">库存</a> · <a href="#orders">面单订单</a></p>
+</section>
+
+<section class="card" id="inbounds">
+  <h2>入库确认 Receive inbound</h2>
+  {% for i in inbounds %}
+  <div class="subcard">
+    <p><strong>{{ i.inbound_no }}</strong> · {{ i.seller_code }} · {{ i.sku }} · {{ i.product_name }} · 预报 {{ i.qty_declared }} · 已收 {{ i.qty_received }} · <span class="status">{{ i.status }}</span></p>
+    <p class="muted">入库运单：{{ i.inbound_tracking or '-' }} · {{ i.seller_name }} {{ i.created_at }}</p>
+    <form method="post" action="/admin/inbound/receive" class="row">
+      <input type="hidden" name="inbound_id" value="{{ i.id }}" />
+      <div><label>实收数量</label><input type="number" name="qty_received" min="0" value="{{ i.qty_received or i.qty_declared }}" /></div>
+      <div style="align-self:end"><button class="btn" type="submit">确认入库 / 更新库存</button></div>
+    </form>
+    <form method="post" action="/admin/inbound/delete" style="margin-top:8px" onsubmit="return confirm('删除预报？')">
+      <input type="hidden" name="inbound_id" value="{{ i.id }}" />
+      <button class="btn danger" type="submit">删除</button>
+    </form>
+  </div>
+  {% else %}<p class="muted">暂无入库预报</p>{% endfor %}
+</section>
+
+<section class="card" id="inventory">
+  <h2>库存 Inventory</h2>
+  <table><tr><th>卖家</th><th>SKU</th><th>品名</th><th>在库</th><th>更新</th></tr>
+  {% for i in inventory %}<tr><td>{{ i.seller_code }}</td><td>{{ i.sku }}</td><td>{{ i.product_name }}</td><td>{{ i.qty_on_hand }}</td><td>{{ i.updated_at }}</td></tr>
+  {% else %}<tr><td colspan="5" class="muted">暂无库存</td></tr>{% endfor %}
+  </table>
+</section>
+
+<section class="card" id="orders">
+  <h2>面单订单 Orders</h2>
+  {% for o in orders %}
+  <div class="subcard">
+    <p><strong>{{ o.order_no }}</strong> · {{ o.seller_code }} · {{ o.sku }} × {{ o.qty }} · {{ o.carrier }} · <span class="status">{{ o.status }}</span>
+      {% if o.inventory_deducted %}<span class="pill">库存已扣</span>{% endif %}
+    </p>
+    <p class="muted">备注：{{ o.note or '-' }} · {{ o.created_at }}</p>
+    <p>面单：
+      {% for f in o.label_files %}<a href="/admin/label/{{ f }}" target="_blank">{{ f }}</a> {% else %}-{% endfor %}
+    </p>
+    <form method="post" action="/admin/order/update" class="row">
+      <input type="hidden" name="order_id" value="{{ o.id }}" />
+      <div><label>状态</label>
+        <select name="status">{% for s in statuses %}<option value="{{ s }}" {% if s==o.status %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+      </div>
+      <div style="flex:1;min-width:180px"><label>出库运单号 Outbound tracking</label>
+        <input name="outbound_tracking" value="{{ o.outbound_tracking or '' }}" />
+      </div>
+      <div style="align-self:end"><button class="btn" type="submit">更新</button></div>
+    </form>
+    <form method="post" action="/admin/order/delete" style="margin-top:8px" onsubmit="return confirm('删除订单？')">
+      <input type="hidden" name="order_id" value="{{ o.id }}" />
+      <button class="btn danger" type="submit">删除</button>
+    </form>
+  </div>
+  {% else %}<p class="muted">暂无订单</p>{% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}上传面单{% endblock %}
+{% block content %}
+<section class="card">
+  <h1>上传面单 Place fulfill order</h1>
+  <p class="muted">收件地址在面单上，无需再填。Upload shipping label PDF(s); warehouse prints, picks SKU, packs, drops off.</p>
+  <div class="note">截单：{{ cutoff }}（占位可改）</div>
+  <form method="post" action="/order" enctype="multipart/form-data" style="margin-top:12px">
+    <div class="grid">
+      <div><label>卖家代码 Seller code *</label><input name="seller_code" required maxlength="40" /></div>
+      <div><label>卖家名</label><input name="seller_name" maxlength="120" /></div>
+      <div><label>联系方式（占位）</label><input name="contact" maxlength="120" /></div>
+      <div><label>SKU *</label><input name="sku" required maxlength="80" /></div>
+      <div><label>数量 Qty *</label><input type="number" name="qty" required min="1" max="9999" value="1" /></div>
+      <div><label>承运商 Carrier *</label>
+        <select name="carrier" required>
+          {% for c in carriers %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+        </select>
+      </div>
+      <div style="grid-column:1/-1"><label>面单 PDF（可多选）Label PDF(s) *</label>
+        <input type="file" name="labels" accept=".pdf,application/pdf" multiple required />
+      </div>
+      <div style="grid-column:1/-1"><label>备注 Note</label><textarea name="note" maxlength="1000" placeholder="可选"></textarea></div>
+    </div>
+    <p style="margin-top:16px"><button class="btn" type="submit">提交面单 Submit</button></p>
+  </form>
+</section>
+{% endblock %}

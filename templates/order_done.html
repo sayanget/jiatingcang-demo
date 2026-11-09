@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}面单已收{% endblock %}
+{% block content %}
+<section class="card">
+  <div class="okbox">
+    <h1>面单已收到</h1>
+    <p>订单号：<code style="font-size:1.2rem">{{ order_no }}</code></p>
+    <p class="muted">状态从「已收到面单」开始。Save this number for tracking.</p>
+    {% if warn %}<p class="note">提示：当前库存 {{ on_hand }}，可能不足；仍已接单，请确认入库。</p>{% endif %}
+  </div>
+  <p class="row" style="margin-top:16px">
+    <a class="btn" href="/track?q={{ order_no }}">查状态</a>
+    <a class="btn secondary" href="/order">再传面单</a>
+  </p>
+</section>
+{% endblock %}

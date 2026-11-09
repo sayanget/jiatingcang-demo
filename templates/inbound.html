@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}入库预报{% endblock %}
+{% block content %}
+<section class="card">
+  <h1>入库预报 Inbound forecast</h1>
+  <p class="muted">卖家把带 SKU 标签的货寄到仓库前先预报。Declare inventory before it arrives.</p>
+  <form method="post" action="/inbound">
+    <div class="grid">
+      <div><label>卖家代码 Seller code *</label><input name="seller_code" required maxlength="40" placeholder="e.g. SELLER01" /></div>
+      <div><label>卖家名 Seller name</label><input name="seller_name" maxlength="120" /></div>
+      <div><label>联系方式 Contact（占位）</label><input name="contact" maxlength="120" placeholder="微信/邮箱占位" /></div>
+      <div><label>SKU / 箱标代码 *</label><input name="sku" required maxlength="80" /></div>
+      <div><label>品名 Product name</label><input name="product_name" maxlength="160" /></div>
+      <div><label>预报数量 Qty *</label><input type="number" name="qty_declared" required min="1" value="1" /></div>
+      <div style="grid-column:1/-1"><label>入库运单号 Inbound tracking</label><input name="inbound_tracking" maxlength="120" placeholder="USPS/UPS tracking to warehouse" /></div>
+    </div>
+    <p style="margin-top:16px"><button class="btn" type="submit">提交预报 Submit</button></p>
+  </form>
+</section>
+{% endblock %}

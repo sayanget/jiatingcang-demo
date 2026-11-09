@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}加州家庭仓｜一件代发{% endblock %}</title>
+  <style>
+    :root { --bg:#0f172a; --card:#1e293b; --text:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8; --ok:#4ade80; --warn:#fbbf24; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Noto Sans SC", sans-serif; background:linear-gradient(180deg,#0b1224,#0f172a 40%,#111827); color:var(--text); min-height:100vh; }
+    a { color:var(--accent); text-decoration:none; } a:hover { text-decoration:underline; }
+    .wrap { max-width:980px; margin:0 auto; padding:24px 16px 64px; }
+    header { display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:center; margin-bottom:24px; }
+    .brand { font-weight:700; font-size:1.15rem; }
+    nav { display:flex; gap:12px; flex-wrap:wrap; font-size:0.92rem; }
+    .card { background:rgba(30,41,59,.92); border:1px solid #334155; border-radius:16px; padding:20px; margin-bottom:16px; box-shadow:0 10px 30px rgba(0,0,0,.25); }
+    h1 { margin:0 0 8px; font-size:1.55rem; } h2 { margin:0 0 12px; font-size:1.15rem; }
+    .muted { color:var(--muted); line-height:1.5; }
+    .pill { display:inline-block; background:#0ea5e933; color:#7dd3fc; border:1px solid #0ea5e966; padding:4px 10px; border-radius:999px; font-size:0.85rem; margin:4px 4px 0 0; }
+    .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
+    label { display:block; font-size:0.9rem; margin-bottom:6px; color:#cbd5e1; }
+    input, textarea, select { width:100%; padding:10px 12px; border-radius:10px; border:1px solid #475569; background:#0b1220; color:var(--text); }
+    textarea { min-height:80px; resize:vertical; }
+    .btn { display:inline-block; background:var(--accent); color:#082f49; font-weight:700; border:0; border-radius:10px; padding:10px 16px; cursor:pointer; }
+    .btn.secondary { background:#334155; color:#e2e8f0; }
+    .btn.danger { background:#7f1d1d; color:#fecaca; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    table { width:100%; border-collapse:collapse; font-size:0.88rem; }
+    th, td { text-align:left; padding:8px 6px; border-bottom:1px solid #334155; vertical-align:top; }
+    .status { font-weight:700; color:var(--ok); }
+    .note { background:#42200655; border:1px solid #a16207; color:#fde68a; padding:10px 12px; border-radius:10px; font-size:0.9rem; }
+    .error { background:#7f1d1d55; border:1px solid #f87171; color:#fecaca; padding:10px 12px; border-radius:10px; }
+    .okbox { background:#14532d55; border:1px solid #4ade80; color:#bbf7d0; padding:12px; border-radius:12px; }
+    code { background:#0b1220; padding:2px 6px; border-radius:6px; }
+    footer { margin-top:28px; color:var(--muted); font-size:0.85rem; }
+    .subcard { background:#0b1220; border:1px solid #334155; border-radius:12px; padding:14px; margin-top:12px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">加州家庭仓｜一件代发</div>
+      <nav>
+        <a href="/">首页</a>
+        <a href="/inbound">入库预报</a>
+        <a href="/order">上传面单</a>
+        <a href="/track">查件/库存</a>
+        <a href="/admin">管理</a>
+      </nav>
+    </header>
+    {% block content %}{% endblock %}
+    <footer>Demo · Spark free · 价格详询 · Contact TBD · 截单时间可改</footer>
+  </div>
+</body>
+</html>

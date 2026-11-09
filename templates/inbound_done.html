@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}预报成功{% endblock %}
+{% block content %}
+<section class="card">
+  <div class="okbox">
+    <h1>入库预报已提交</h1>
+    <p>预报单号：<code style="font-size:1.2rem">{{ inbound_no }}</code></p>
+    <p class="muted">仓库收货后会确认入库并计入你的库存。</p>
+  </div>
+  <p class="row" style="margin-top:16px">
+    <a class="btn" href="/track?q={{ inbound_no }}">查看状态</a>
+    <a class="btn secondary" href="/inbound">再报一单</a>
+  </p>
+</section>
+{% endblock %}

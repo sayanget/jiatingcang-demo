@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}查件/库存{% endblock %}
+{% block content %}
+<section class="card">
+  <h1>查件 / 库存 Track &amp; stock</h1>
+  <form method="get" action="/track" class="row">
+    <div style="flex:1;min-width:240px">
+      <label>订单号 / 预报号 / 卖家代码</label>
+      <input name="q" value="{{ q }}" placeholder="JC… / IB… / SELLER01" required />
+    </div>
+    <div style="align-self:end"><button class="btn" type="submit">查询</button></div>
+  </form>
+  {% if error %}<p class="error" style="margin-top:12px">{{ error }}</p>{% endif %}
+  {% if order %}
+  <div class="okbox" style="margin-top:16px">
+    <p>订单 <code>{{ order.order_no }}</code> · <span class="status">{{ order.status }}</span></p>
+    <p>SKU {{ order.sku }} × {{ order.qty }} · {{ order.carrier }}</p>
+    <p>出库运单 Outbound tracking：{% if order.outbound_tracking %}<code>{{ order.outbound_tracking }}</code>{% else %}暂无{% endif %}</p>
+  </div>
+  {% endif %}
+  {% if inventory %}
+  <div class="subcard"><h2>库存 Inventory（该卖家）</h2>
+    <table><tr><th>SKU</th><th>品名</th><th>在库</th></tr>
+    {% for i in inventory %}<tr><td>{{ i.sku }}</td><td>{{ i.product_name }}</td><td>{{ i.qty_on_hand }}</td></tr>{% endfor %}
+    </table>
+  </div>
+  {% endif %}
+  {% if orders %}
+  <div class="subcard"><h2>订单 Orders</h2>
+    <table><tr><th>单号</th><th>SKU</th><th>数量</th><th>承运</th><th>状态</th><th>出库单号</th></tr>
+    {% for o in orders %}<tr><td>{{ o.order_no }}</td><td>{{ o.sku }}</td><td>{{ o.qty }}</td><td>{{ o.carrier }}</td><td>{{ o.status }}</td><td>{{ o.outbound_tracking or '-' }}</td></tr>{% endfor %}
+    </table>
+  </div>
+  {% endif %}
+  {% if inbound %}
+  <div class="subcard"><h2>入库预报 Inbounds</h2>
+    <table><tr><th>预报号</th><th>SKU</th><th>预报</th><th>已收</th><th>入库运单</th><th>状态</th></tr>
+    {% for i in inbound %}<tr><td>{{ i.inbound_no }}</td><td>{{ i.sku }}</td><td>{{ i.qty_declared }}</td><td>{{ i.qty_received }}</td><td>{{ i.inbound_tracking or '-' }}</td><td>{{ i.status }}</td></tr>{% endfor %}
+    </table>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
