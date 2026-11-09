@@ -471,6 +471,24 @@ def admin_page(request: Request):
     return render(request, "admin.html", orders=orders, inbounds=inbounds, inventory=inventory, statuses=STATUS_OPTIONS, admin_ready=bool(ADMIN_PASSWORD))
 
 
+@app.post("/admin/set-password")
+async def admin_set_password(old_password: str = Form(...), new_password: str = Form(...)):
+    """Change ADMIN_PASSWORD when the current password is known. Writes .env."""
+    global ADMIN_PASSWORD
+    if not ADMIN_PASSWORD or old_password != ADMIN_PASSWORD:
+        raise HTTPException(401, "旧密码错误 / Wrong current password")
+    new_password = (new_password or "").strip()
+    if len(new_password) < 8:
+        raise HTTPException(400, "Password too short")
+    ENV_FILE.write_text(f"ADMIN_PASSWORD={new_password}\n", encoding="utf-8")
+    try:
+        ENV_FILE.chmod(0o600)
+    except Exception:
+        pass
+    ADMIN_PASSWORD = new_password
+    return {"ok": True, "admin_configured": True}
+
+
 @app.post("/admin/setup")
 async def admin_setup(password: str = Form(...)):
     """One-time bootstrap when ADMIN_PASSWORD is unset. Writes .env and arms admin auth."""
