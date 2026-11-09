@@ -203,12 +203,12 @@ def bump_inventory(conn, seller_code: str, sku: str, product_name: str, delta: i
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    return render(request, "home.html", **{  })
+    return render(request, "home.html", cutoff=CUTOFF_PLACEHOLDER, statuses=STATUS_OPTIONS)
 
 
 @app.get("/inbound", response_class=HTMLResponse)
 def inbound_form(request: Request):
-    return render(request, "inbound.html", **{  })
+    return render(request, "inbound.html", cutoff=CUTOFF_PLACEHOLDER)
 
 
 @app.post("/inbound")
@@ -249,12 +249,12 @@ async def inbound_submit(
                 break
             except psycopg.errors.UniqueViolation:
                 inbound_no = new_no("IB")
-    return render(request, "inbound_done.html", **{  })
+    return render(request, "inbound_done.html", inbound_no=inbound_no, cutoff=CUTOFF_PLACEHOLDER)
 
 
 @app.get("/order", response_class=HTMLResponse)
 def order_form(request: Request):
-    return render(request, "order.html", **{  })
+    return render(request, "order.html", cutoff=CUTOFF_PLACEHOLDER, carriers=CARRIERS)
 
 
 @app.post("/order")
@@ -314,12 +314,7 @@ async def order_submit(
             except psycopg.errors.UniqueViolation:
                 order_no = new_no("JC")
 
-    return render(request, "order_done.html", **{ 
-            "order_no": order_no,
-            "warn": warn,
-            "on_hand": on_hand,
-            "cutoff": CUTOFF_PLACEHOLDER,
-         })
+    return render(request, "order_done.html", order_no=order_no, warn=warn, on_hand=on_hand, cutoff=CUTOFF_PLACEHOLDER)
 
 
 @app.get("/track", response_class=HTMLResponse)
@@ -401,21 +396,13 @@ def track(request: Request, q: str = ""):
             ]
         if not order and not orders and not inventory and not inbound:
             error = "未找到 / Not found — try order no (JC…), inbound no (IB…), or seller code"
-    return render(request, "track.html", **{ 
-            "q": qn,
-            "order": order,
-            "orders": orders,
-            "inventory": inventory,
-            "inbound": inbound,
-            "error": error,
-            "cutoff": CUTOFF_PLACEHOLDER,
-         })
+    return render(request, "track.html", q=qn, order=order, orders=orders, inventory=inventory, inbound=inbound, error=error, cutoff=CUTOFF_PLACEHOLDER)
 
 
 @app.get("/admin", response_class=HTMLResponse)
 def admin_page(request: Request):
     if not is_admin(request):
-        return render(request, "admin_login.html", **{  })
+        return render(request, "admin_login.html", error=None)
     with db() as conn:
         orders = [
             {
@@ -479,13 +466,7 @@ def admin_page(request: Request):
                 """
             ).fetchall()
         ]
-    return render(request, "admin.html", **{ 
-            "orders": orders,
-            "inbounds": inbounds,
-            "inventory": inventory,
-            "statuses": STATUS_OPTIONS,
-            "admin_ready": bool(ADMIN_PASSWORD),
-         })
+    return render(request, "admin.html", orders=orders, inbounds=inbounds, inventory=inventory, statuses=STATUS_OPTIONS, admin_ready=bool(ADMIN_PASSWORD))
 
 
 @app.post("/admin/login")
