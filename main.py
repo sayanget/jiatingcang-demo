@@ -130,7 +130,19 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="加州家庭仓｜一件代发", lifespan=lifespan)
-templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+_template_dirs = [BASE_DIR / "templates", Path.cwd() / "templates"]
+_template_dir = next((d for d in _template_dirs if d.is_dir()), BASE_DIR / "templates")
+templates = Jinja2Templates(directory=str(_template_dir))
+print("templates_dir", _template_dir, "exists", _template_dir.is_dir())
+
+
+def render(request: Request, name: str, **ctx):
+    ctx = {"request": request, **ctx}
+    try:
+        # Starlette >=0.37 prefers (request, name, context)
+        return render(request, name, ctx)
+    except TypeError:
+        return render(name, ctx)
 
 
 def new_no(prefix: str) -> str:
@@ -191,17 +203,12 @@ def bump_inventory(conn, seller_code: str, sku: str, product_name: str, delta: i
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    return templates.TemplateResponse(
-        "home.html",
-        {"request": request, "cutoff": CUTOFF_PLACEHOLDER, "statuses": STATUS_OPTIONS},
-    )
+    return render(request, "home.html", **{  })
 
 
 @app.get("/inbound", response_class=HTMLResponse)
 def inbound_form(request: Request):
-    return templates.TemplateResponse(
-        "inbound.html", {"request": request, "cutoff": CUTOFF_PLACEHOLDER}
-    )
+    return render(request, "inbound.html", **{  })
 
 
 @app.post("/inbound")
@@ -242,18 +249,12 @@ async def inbound_submit(
                 break
             except psycopg.errors.UniqueViolation:
                 inbound_no = new_no("IB")
-    return templates.TemplateResponse(
-        "inbound_done.html",
-        {"request": request, "inbound_no": inbound_no, "cutoff": CUTOFF_PLACEHOLDER},
-    )
+    return render(request, "inbound_done.html", **{  })
 
 
 @app.get("/order", response_class=HTMLResponse)
 def order_form(request: Request):
-    return templates.TemplateResponse(
-        "order.html",
-        {"request": request, "cutoff": CUTOFF_PLACEHOLDER, "carriers": CARRIERS},
-    )
+    return render(request, "order.html", **{  })
 
 
 @app.post("/order")
@@ -313,16 +314,12 @@ async def order_submit(
             except psycopg.errors.UniqueViolation:
                 order_no = new_no("JC")
 
-    return templates.TemplateResponse(
-        "order_done.html",
-        {
-            "request": request,
+    return render(request, "order_done.html", **{ 
             "order_no": order_no,
             "warn": warn,
             "on_hand": on_hand,
             "cutoff": CUTOFF_PLACEHOLDER,
-        },
-    )
+         })
 
 
 @app.get("/track", response_class=HTMLResponse)
@@ -404,10 +401,7 @@ def track(request: Request, q: str = ""):
             ]
         if not order and not orders and not inventory and not inbound:
             error = "未找到 / Not found — try order no (JC…), inbound no (IB…), or seller code"
-    return templates.TemplateResponse(
-        "track.html",
-        {
-            "request": request,
+    return render(request, "track.html", **{ 
             "q": qn,
             "order": order,
             "orders": orders,
@@ -415,14 +409,13 @@ def track(request: Request, q: str = ""):
             "inbound": inbound,
             "error": error,
             "cutoff": CUTOFF_PLACEHOLDER,
-        },
-    )
+         })
 
 
 @app.get("/admin", response_class=HTMLResponse)
 def admin_page(request: Request):
     if not is_admin(request):
-        return templates.TemplateResponse("admin_login.html", {"request": request, "error": None})
+        return render(request, "admin_login.html", **{  })
     with db() as conn:
         orders = [
             {
@@ -486,23 +479,19 @@ def admin_page(request: Request):
                 """
             ).fetchall()
         ]
-    return templates.TemplateResponse(
-        "admin.html",
-        {
-            "request": request,
+    return render(request, "admin.html", **{ 
             "orders": orders,
             "inbounds": inbounds,
             "inventory": inventory,
             "statuses": STATUS_OPTIONS,
             "admin_ready": bool(ADMIN_PASSWORD),
-        },
-    )
+         })
 
 
 @app.post("/admin/login")
 async def admin_login(request: Request, password: str = Form(...)):
     if not ADMIN_PASSWORD or password != ADMIN_PASSWORD:
-        return templates.TemplateResponse(
+        return render(
             "admin_login.html",
             {"request": request, "error": "密码错误 / Wrong password"},
             status_code=401,
