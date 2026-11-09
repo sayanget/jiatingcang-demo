@@ -136,13 +136,15 @@ templates = Jinja2Templates(directory=str(_template_dir))
 print("templates_dir", _template_dir, "exists", _template_dir.is_dir())
 
 
-def render(request: Request, name: str, **ctx):
+def render(request: Request, name: str, status_code: int = 200, **ctx):
     ctx = {"request": request, **ctx}
     try:
         # Starlette >=0.37 prefers (request, name, context)
-        return render(request, name, ctx)
+        resp = templates.TemplateResponse(request, name, ctx)
     except TypeError:
-        return render(name, ctx)
+        resp = templates.TemplateResponse(name, ctx)
+    resp.status_code = status_code
+    return resp
 
 
 def new_no(prefix: str) -> str:
@@ -472,11 +474,7 @@ def admin_page(request: Request):
 @app.post("/admin/login")
 async def admin_login(request: Request, password: str = Form(...)):
     if not ADMIN_PASSWORD or password != ADMIN_PASSWORD:
-        return render(
-            "admin_login.html",
-            {"request": request, "error": "密码错误 / Wrong password"},
-            status_code=401,
-        )
+        return render(request, "admin_login.html", status_code=401, error="密码错误 / Wrong password")
     resp = RedirectResponse("/admin", status_code=303)
     resp.set_cookie(ADMIN_COOKIE, "1", httponly=True, samesite="lax", max_age=60 * 60 * 12)
     return resp
