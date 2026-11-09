@@ -21,7 +21,12 @@ STATUS_OPTIONS = ["已收到面单", "已打印", "已打包", "已交USPS/UPS"]
 SHIPPED_STATUS = "已交USPS/UPS"
 INBOUND_STATUSES = ["预报中", "已入库"]
 CARRIERS = ["USPS", "UPS"]
-CUTOFF_PLACEHOLDER = "太平洋时间下午 4:00"  # editable placeholder
+# Public cutoff label; override with env CUTOFF_LABEL without redeploying templates
+CUTOFF_LABEL = os.environ.get(
+    "CUTOFF_LABEL",
+    "太平洋时间下午 4:00",
+)
+CUTOFF_PLACEHOLDER = CUTOFF_LABEL  # backward-compatible alias used by templates
 
 
 def load_dotenv(path: Path) -> None:
