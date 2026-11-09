@@ -4,7 +4,6 @@
 <section class="card">
   <h1>上传面单 Place fulfill order</h1>
   <p class="muted">收件地址在面单上，无需再填。Upload shipping label PDF(s); warehouse prints, picks SKU, packs, drops off.</p>
-  <div class="note">截单时间：{{ cutoff }}</div>
   <form method="post" action="/order" enctype="multipart/form-data" style="margin-top:12px">
     <div class="grid">
       <div><label>卖家代码 Seller code *</label><input name="seller_code" required maxlength="40" /></div>
