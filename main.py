@@ -471,6 +471,24 @@ def admin_page(request: Request):
     return render(request, "admin.html", orders=orders, inbounds=inbounds, inventory=inventory, statuses=STATUS_OPTIONS, admin_ready=bool(ADMIN_PASSWORD))
 
 
+@app.post("/admin/setup")
+async def admin_setup(password: str = Form(...)):
+    """One-time bootstrap when ADMIN_PASSWORD is unset. Writes .env and arms admin auth."""
+    global ADMIN_PASSWORD
+    if ADMIN_PASSWORD:
+        raise HTTPException(400, "Already configured")
+    password = (password or "").strip()
+    if len(password) < 8:
+        raise HTTPException(400, "Password too short")
+    ENV_FILE.write_text(f"ADMIN_PASSWORD={password}\n", encoding="utf-8")
+    try:
+        ENV_FILE.chmod(0o600)
+    except Exception:
+        pass
+    ADMIN_PASSWORD = password
+    return {"ok": True, "admin_configured": True}
+
+
 @app.post("/admin/login")
 async def admin_login(request: Request, password: str = Form(...)):
     if not ADMIN_PASSWORD or password != ADMIN_PASSWORD:
