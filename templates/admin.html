@@ -31,9 +31,12 @@
 
 <section class="card" id="inventory">
   <h2>库存 Inventory</h2>
-  <table><tr><th>卖家</th><th>SKU</th><th>品名</th><th>在库</th><th>更新</th></tr>
-  {% for i in inventory %}<tr><td>{{ i.seller_code }}</td><td>{{ i.sku }}</td><td>{{ i.product_name }}</td><td>{{ i.qty_on_hand }}</td><td>{{ i.updated_at }}</td></tr>
-  {% else %}<tr><td colspan="5" class="muted">暂无库存</td></tr>{% endfor %}
+  <table><tr><th>卖家</th><th>SKU</th><th>品名</th><th>在库</th><th>更新</th><th></th></tr>
+  {% for i in inventory %}<tr>
+    <td>{{ i.seller_code }}</td><td>{{ i.sku }}</td><td>{{ i.product_name }}</td><td>{{ i.qty_on_hand }}</td><td>{{ i.updated_at }}</td>
+    <td><form method="post" action="/admin/inventory/delete" onsubmit="return confirm('删除库存行？')"><input type="hidden" name="inventory_id" value="{{ i.id }}" /><button class="btn danger" type="submit">删</button></form></td>
+  </tr>
+  {% else %}<tr><td colspan="6" class="muted">暂无库存</td></tr>{% endfor %}
   </table>
 </section>
 

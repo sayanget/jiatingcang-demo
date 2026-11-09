@@ -601,6 +601,14 @@ def admin_inbound_delete(request: Request, inbound_id: int = Form(...)):
     return RedirectResponse("/admin#inbounds", status_code=303)
 
 
+@app.post("/admin/inventory/delete")
+def admin_inventory_delete(request: Request, inventory_id: int = Form(...)):
+    require_admin(request)
+    with db() as conn:
+        conn.execute("DELETE FROM inventory WHERE id=%s", (inventory_id,))
+    return RedirectResponse("/admin#inventory", status_code=303)
+
+
 @app.get("/admin/label/{filename}")
 def admin_label_download(request: Request, filename: str):
     require_admin(request)
