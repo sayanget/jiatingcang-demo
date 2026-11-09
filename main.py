@@ -614,6 +614,19 @@ def admin_label_download(request: Request, filename: str):
     return FileResponse(path, filename=safe)
 
 
+@app.get("/ping")
+def ping():
+    return {
+        "ok": True,
+        "base_dir": str(BASE_DIR),
+        "templates_dir": str(_template_dir),
+        "templates_exist": _template_dir.is_dir(),
+        "cwd": str(Path.cwd()),
+        "admin_configured": bool(ADMIN_PASSWORD),
+        "template_files": sorted([x.name for x in _template_dir.glob("*.html")]) if _template_dir.is_dir() else [],
+    }
+
+
 @app.get("/health")
 def health():
     try:
